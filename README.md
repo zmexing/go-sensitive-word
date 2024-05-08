@@ -16,16 +16,17 @@ package main
 import (
 	sensitive "e.coding.net/zmexing/zx/go-sensitive-word"
 	"fmt"
+	"log"
 )
 
 func main() {
 	filter := sensitive.NewFilter(
-		StoreOption{Type: StoreMemory},
-		FilterOption{Type: FilterDfa},
+		sensitive.StoreOption{Type: sensitive.StoreMemory},
+		sensitive.FilterOption{Type: sensitive.FilterDfa},
 	)
 
 	// 加载敏感词库
-	err := filter.Store.LoadDictPath("./text/dict2.txt")
+	err := filter.Store.LoadDictPath("./your_path/dict.txt")
 	if err != nil {
 		log.Fatalf("加载词库发生了错误, err:%v", err)
 		return
@@ -64,6 +65,7 @@ func main() {
 	res6 := filter.Remove(sensitiveText)
 	fmt.Printf("res6: %v \n", res6)
 }
+
 
 // 输出结果
 // res1: true
