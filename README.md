@@ -101,3 +101,4 @@ func main() {
 - unicode违规技巧：https://zhuanlan.zhihu.com/p/545309061
 - unicode视觉欺骗：https://zhuanlan.zhihu.com/p/611904676
 - unicode字符列表：https://symbl.cc/en/unicode-table
+- 汉字结构描述字符：https://zh.wikipedia.org/wiki/%E8%A1%A8%E6%84%8F%E6%96%87%E5%AD%97%E6%8F%8F%E8%BF%B0%E5%AD%97%E7%AC%A6
