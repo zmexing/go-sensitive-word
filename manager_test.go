@@ -20,13 +20,13 @@ func TestFilter1(t *testing.T) {
 	}
 
 	// 动态自定义敏感词
-	err = filter.Store.AddWord("测试1", "测试2", "李先生")
+	err = filter.Store.AddWord("测试1", "测试2", "成小王")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	sensitiveText := "李先生微笑着对毒品销售说，我认为台湾国的人有点意思"
+	sensitiveText := "成小王微笑着对毒品销售说，我认为台湾国的人有点意思"
 
 	// 是否有敏感词
 	res1 := filter.IsSensitive(sensitiveText)

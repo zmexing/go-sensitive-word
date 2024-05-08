@@ -33,13 +33,13 @@ func main() {
 	}
 
 	// 动态自定义敏感词
-	err = filter.Store.AddWord("测试1", "测试2", "李先生")
+	err = filter.Store.AddWord("测试1", "测试2", "成小王")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	sensitiveText := "李先生微笑着对毒品销售说，我认为台湾国的人有点意思"
+	sensitiveText := "成小王微笑着对毒品销售说，我认为台湾国的人有点意思"
 
 	// 是否有敏感词
 	res1 := filter.IsSensitive(sensitiveText)
@@ -68,12 +68,12 @@ func main() {
 
 
 // 输出结果
-// res1: true
-// res2: 毒品
-// res3: [毒品 毒品销售 台湾国]
-// res4: map[台湾国:1 毒品:1 毒品销售:1]
-// res5: 李先生微笑着对****说，我认为***的人有点意思
-// res6: 李先生微笑着对销售说，我认为的人有点意思 
+//res1: true
+//res2: 成小王
+//res3: [成小王 毒品 毒品销售 台湾国]
+//res4: map[台湾国:1 成小王:1 毒品:1 毒品销售:1]
+//res5: ***微笑着对****说，我认为***的人有点意思
+//res6: 微笑着对销售说，我认为的人有点意思 
 ```
 
 ## 常见问题
