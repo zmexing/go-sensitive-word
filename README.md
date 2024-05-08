@@ -77,6 +77,7 @@ func main() {
 ## 常见问题
 
 - [Unicode相似字符攻击](./docs/unicode.md)
+- [零宽字符攻击](docs/zero-width.md)
 
 ## 性能压测
 
