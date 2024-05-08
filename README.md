@@ -94,3 +94,10 @@ func main() {
 |---|---------------------|------------------|----------------------|
 | IsSensitive  | 267.6 ns，约 452W QPS | 240 ms，约 10W QPS | 大约是Java性能的 898,876 倍 |
 | Replace | 587.5 ns，约 202W QPS | 447 ms，约 10W QPS | 大约是Java性能的 761,702 倍 |
+
+## 参考资料
+- 基于Java DFA实现的敏感词过滤：https://github.com/houbb/sensitive-word
+- unicode字词的神奇组合：https://www.zhihu.com/question/30873035
+- unicode违规技巧：https://zhuanlan.zhihu.com/p/545309061
+- unicode视觉欺骗：https://zhuanlan.zhihu.com/p/611904676
+- unicode字符列表：https://symbl.cc/en/unicode-table
