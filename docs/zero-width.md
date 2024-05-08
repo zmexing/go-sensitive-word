@@ -15,8 +15,8 @@ func IsZeroWidth(s string) bool {
 
 // RemoveZeroWidth 移除零宽字符
 func RemoveZeroWidth(s string) string {
-re := regexp.MustCompile(`[\p{Cf}\\u200B]`)
-return re.ReplaceAllString(s, "")
+    re := regexp.MustCompile(`[\p{Cf}\\u200B]`)
+    return re.ReplaceAllString(s, "")
 }
 ```
 
@@ -48,7 +48,7 @@ func TestRemoveIsZeroWidth(t *testing.T) {
     fmt.Println("res1 结果：", res1) // 马斯克
     
     res2 := RemoveZeroWidth(str3Zero)
-    fmt.Println("res2 结果：", res2) //
+    fmt.Println("res2 结果：", res2) // 马斯克
     
     res3 := res1 == res2
     fmt.Println("res1 和 res2 比较的结果：", res3)
