@@ -41,7 +41,7 @@
 
 下面的逻辑图掩饰敏感词库多条字词形成的 DFA 节点书思维图。
 
-![](assets/dfa-mingan.jpg)
+![](assets/dfa-mingan.png)
 
 [//]: # (```mermaid)
 
