@@ -76,6 +76,36 @@ func main() {
 //res6: 微笑着对销售说，我认为的人有点意思 
 ```
 
+## 更多特性
+
+### 字符串检测
+
+```go
+// HasEmail 判断字符串中是否存在邮箱地址
+func HasEmail(s string) bool
+
+// MaskEmail 将字符串中存在的邮箱地址替换成 "*"
+func MaskEmail(s string) string
+
+// HasURL 判断字符串中是否存在网址
+func HasURL(s string) bool
+
+// MaskURL 将字符串中存在的网址替换成 "*"
+func MaskURL(s string) string
+
+// HasDigit 判断字符串中是否存在指定个数的数字（大于等于该数字）
+func HasDigit(s string, count int) bool
+
+// MaskDigit 将字符串中存在的数字替换成 "*"
+func MaskDigit(s string) string
+
+// HasWechatID 判断字符串中是否存在微信号
+func HasWechatID(s string) bool
+
+// MaskWechatID 将字符串中存在的微信号替换成 "*"
+func MaskWechatID(s string) string
+```
+
 ## 常见问题
 
 - [Unicode相似字符攻击](./docs/unicode.md)
