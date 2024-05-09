@@ -111,20 +111,6 @@ func MaskWechatID(s string) string
 - [Unicode相似字符攻击](./docs/unicode.md)
 - [零宽字符攻击](docs/zero-width.md)
 
-## 性能压测
-
-**硬件环境**
-- 处理器：Apple M2
-- 基带：内存：16 GB 类型：LPDDR5
-- 系统类型：MacOS Ventura 版本13.5 (22G74)
-
-**压测结果**
-
-| 方法 | Go耗时                | Java耗时           | 备注                   |
-|---|---------------------|------------------|----------------------|
-| IsSensitive  | 267.6 ns，约 452W QPS | 240 ms，约 10W QPS | 大约是Java性能的 898,876 倍 |
-| Replace | 587.5 ns，约 202W QPS | 447 ms，约 10W QPS | 大约是Java性能的 761,702 倍 |
-
 ## 参考资料
 - 基于Java DFA实现的敏感词过滤：https://github.com/houbb/sensitive-word
 - unicode字词的神奇组合：https://www.zhihu.com/question/30873035
