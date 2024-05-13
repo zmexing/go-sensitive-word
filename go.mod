@@ -7,7 +7,6 @@ toolchain go1.22.1
 require (
 	github.com/imroc/req/v3 v3.43.3
 	github.com/orcaman/concurrent-map/v2 v2.0.1
-	github.com/sgoware/ds v0.0.0-20230824044855-a6df320656ac
 )
 
 require (
