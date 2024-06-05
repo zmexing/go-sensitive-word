@@ -1,6 +1,7 @@
 package go_sensitive_word
 
 import (
+	"e.coding.net/zmexing/zx/go-sensitive-word/text"
 	"fmt"
 	"log"
 	"testing"
@@ -51,6 +52,39 @@ func TestFilter1(t *testing.T) {
 	// 过滤铭感词
 	res6 := filter.Remove(sensitiveText)
 	fmt.Printf("res6: %v \n", res6)
+}
+
+func TestFilter2(t *testing.T) {
+	filter := NewFilter(
+		StoreOption{Type: StoreMemory},
+		FilterOption{Type: FilterDfa},
+	)
+
+	files, err := text.Files()
+	if err != nil {
+		log.Fatalf("获取敏感词库文件发生了错误, err:%v", err)
+		return
+	}
+
+	// 加载敏感词库
+	err = filter.Store.LoadDictPath(files...)
+	if err != nil {
+		log.Fatalf("加载词库发生了错误, err:%v", err)
+		return
+	}
+
+	// 动态自定义敏感词
+	err = filter.Store.AddWord("测试1", "测试2", "成小王")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	sensitiveText := "成小王微笑着对毒品销售说，我认为台湾国的人有点意思"
+
+	// 是否有敏感词
+	res1 := filter.IsSensitive(sensitiveText)
+	fmt.Printf("res1: %v \n", res1)
 }
 
 func BenchmarkIsSensitive(b *testing.B) {
