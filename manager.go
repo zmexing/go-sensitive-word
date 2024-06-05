@@ -1,6 +1,7 @@
 package go_sensitive_word
 
 import (
+	"errors"
 	"github.com/zmexing/go-sensitive-word/filter"
 	"github.com/zmexing/go-sensitive-word/store"
 )
@@ -10,7 +11,7 @@ type Manager struct {
 	filter.Filter
 }
 
-func NewFilter(storeOption StoreOption, filterOption FilterOption) *Manager {
+func NewFilter(storeOption StoreOption, filterOption FilterOption) (*Manager, error) {
 	var filterStore store.Store
 	var myFilter filter.Filter
 
@@ -18,7 +19,7 @@ func NewFilter(storeOption StoreOption, filterOption FilterOption) *Manager {
 	case StoreMemory:
 		filterStore = store.NewMemoryModel()
 	default:
-		panic("invalid store type")
+		return nil, errors.New("invalid store type")
 	}
 
 	switch filterOption.Type {
@@ -27,11 +28,11 @@ func NewFilter(storeOption StoreOption, filterOption FilterOption) *Manager {
 		go dfaModel.Listen(filterStore.GetAddChan(), filterStore.GetDelChan())
 		myFilter = dfaModel
 	default:
-		panic("invalid filter type")
+		return nil, errors.New("invalid filter type")
 	}
 
 	return &Manager{
 		Store:  filterStore,
 		Filter: myFilter,
-	}
+	}, nil
 }
