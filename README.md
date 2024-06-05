@@ -20,13 +20,17 @@ import (
 )
 
 func main() {
-	filter := sensitive.NewFilter(
+	filter,err := sensitive.NewFilter(
 		sensitive.StoreOption{Type: sensitive.StoreMemory},
 		sensitive.FilterOption{Type: sensitive.FilterDfa},
 	)
+	if err != nil {
+		log.Fatalf("敏感词服务启动失败, err:%v", err)
+		return
+	}
 
 	// 加载敏感词库
-	err := filter.Store.LoadDictPath("./your_path/dict.txt")
+	err = filter.Store.LoadDictPath("./your_path/dict.txt")
 	if err != nil {
 		log.Fatalf("加载词库发生了错误, err:%v", err)
 		return

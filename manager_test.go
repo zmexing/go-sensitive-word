@@ -7,13 +7,17 @@ import (
 )
 
 func TestFilter1(t *testing.T) {
-	filter := NewFilter(
+	filter, err := NewFilter(
 		StoreOption{Type: StoreMemory},
 		FilterOption{Type: FilterDfa},
 	)
+	if err != nil {
+		log.Fatalf("敏感词服务启动失败, err:%v", err)
+		return
+	}
 
 	// 加载敏感词库
-	err := filter.Store.LoadDictPath("./text/dict2.txt")
+	err = filter.Store.LoadDictPath("./text/dict2.txt")
 	if err != nil {
 		log.Fatalf("加载词库发生了错误, err:%v", err)
 		return
@@ -54,10 +58,15 @@ func TestFilter1(t *testing.T) {
 }
 
 func TestFilter2(t *testing.T) {
-	filter := NewFilter(
+	filter, err := NewFilter(
 		StoreOption{Type: StoreMemory},
 		FilterOption{Type: FilterDfa},
 	)
+
+	if err != nil {
+		log.Fatalf("敏感词服务启动失败, err:%v", err)
+		return
+	}
 
 	//files, err := text.Files()
 	//if err != nil {
@@ -73,7 +82,7 @@ func TestFilter2(t *testing.T) {
 	//}
 
 	// 动态自定义敏感词
-	err := filter.Store.AddWord("测试1", "测试2", "成小王")
+	err = filter.Store.AddWord("测试1", "测试2", "成小王")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -87,12 +96,17 @@ func TestFilter2(t *testing.T) {
 }
 
 func BenchmarkIsSensitive(b *testing.B) {
-	filter := NewFilter(
+	filter, err := NewFilter(
 		StoreOption{Type: StoreMemory},
 		FilterOption{Type: FilterDfa},
 	)
 
-	err := filter.Store.LoadDictPath("./text/dict2.txt")
+	if err != nil {
+		log.Fatalf("敏感词服务启动失败, err:%v", err)
+		return
+	}
+
+	err = filter.Store.LoadDictPath("./text/dict2.txt")
 	if err != nil {
 		log.Fatalf("加载词库发生了错误, err:%v", err)
 		return
@@ -113,12 +127,17 @@ func BenchmarkIsSensitive(b *testing.B) {
 }
 
 func BenchmarkReplace(b *testing.B) {
-	filter := NewFilter(
+	filter, err := NewFilter(
 		StoreOption{Type: StoreMemory},
 		FilterOption{Type: FilterDfa},
 	)
 
-	err := filter.Store.LoadDictPath("./text/dict2.txt")
+	if err != nil {
+		log.Fatalf("敏感词服务启动失败, err:%v", err)
+		return
+	}
+
+	err = filter.Store.LoadDictPath("./text/dict2.txt")
 	if err != nil {
 		log.Fatalf("加载词库发生了错误, err:%v", err)
 		return
