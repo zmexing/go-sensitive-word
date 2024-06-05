@@ -1,8 +1,8 @@
 package go_sensitive_word
 
 import (
-	"e.coding.net/zmexing/zx/go-sensitive-word/filter"
-	"e.coding.net/zmexing/zx/go-sensitive-word/store"
+	"github.com/zmexing/go-sensitive-word/filter"
+	"github.com/zmexing/go-sensitive-word/store"
 )
 
 type Manager struct {

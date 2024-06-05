@@ -1,8 +1,8 @@
 package go_sensitive_word
 
 import (
-	"e.coding.net/zmexing/zx/go-sensitive-word/text"
 	"fmt"
+	"github.com/zmexing/go-sensitive-word/text"
 	"log"
 	"testing"
 )
