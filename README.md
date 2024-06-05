@@ -6,7 +6,7 @@
 
 **安装**
 ```bash
-go get -u e.coding.net/zmexing/zx/go-sensitive-word@latest
+go get -u github.com/zmexing/go-sensitive-word@latest
 ```
 
 **使用**
@@ -14,7 +14,7 @@ go get -u e.coding.net/zmexing/zx/go-sensitive-word@latest
 package main
 
 import (
-	sensitive "e.coding.net/zmexing/zx/go-sensitive-word"
+	sensitive "github.com/zmexing/go-sensitive-word"
 	"fmt"
 	"log"
 )

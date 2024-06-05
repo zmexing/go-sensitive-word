@@ -1,4 +1,4 @@
-module e.coding.net/zmexing/zx/go-sensitive-word
+module github.com/zmexing/go-sensitive-word
 
 go 1.21
 
