@@ -11,7 +11,7 @@ func Files() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(filePath)
+
 	return []string{
 		filePath + "/COVID-19词库.txt",
 		filePath + "/其他词库.txt",
