@@ -2,7 +2,6 @@ package go_sensitive_word
 
 import (
 	"fmt"
-	"github.com/zmexing/go-sensitive-word/text"
 	"log"
 	"testing"
 )
@@ -60,21 +59,21 @@ func TestFilter2(t *testing.T) {
 		FilterOption{Type: FilterDfa},
 	)
 
-	files, err := text.Files()
-	if err != nil {
-		log.Fatalf("获取敏感词库文件发生了错误, err:%v", err)
-		return
-	}
-
-	// 加载敏感词库
-	err = filter.Store.LoadDictPath(files...)
-	if err != nil {
-		log.Fatalf("加载词库发生了错误, err:%v", err)
-		return
-	}
+	//files, err := text.Files()
+	//if err != nil {
+	//	log.Fatalf("获取敏感词库文件发生了错误, err:%v", err)
+	//	return
+	//}
+	//
+	//// 加载敏感词库
+	//err = filter.Store.LoadDictPath(files...)
+	//if err != nil {
+	//	log.Fatalf("加载词库发生了错误, err:%v", err)
+	//	return
+	//}
 
 	// 动态自定义敏感词
-	err = filter.Store.AddWord("测试1", "测试2", "成小王")
+	err := filter.Store.AddWord("测试1", "测试2", "成小王")
 	if err != nil {
 		fmt.Println(err)
 		return
