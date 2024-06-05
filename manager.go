@@ -3,6 +3,7 @@ package go_sensitive_word
 import (
 	"github.com/zmexing/go-sensitive-word/filter"
 	"github.com/zmexing/go-sensitive-word/store"
+	"github.com/zmexing/go-sensitive-word/text"
 )
 
 type Manager struct {
@@ -28,6 +29,12 @@ func NewFilter(storeOption StoreOption, filterOption FilterOption) *Manager {
 		myFilter = dfaModel
 	default:
 		panic("invalid filter type")
+	}
+
+	// 加载敏感词库
+	files, err := text.Files()
+	if err == nil {
+		filterStore.LoadDictPath(files...)
 	}
 
 	return &Manager{
