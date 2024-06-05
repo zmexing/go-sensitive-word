@@ -1,6 +1,6 @@
 module github.com/zmexing/go-sensitive-word
 
-go 1.21
+go 1.18
 
 toolchain go1.22.1
 
