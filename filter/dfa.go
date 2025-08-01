@@ -1,10 +1,12 @@
 package filter
 
+// DFA 树节点结构
 type dfaNode struct {
-	children map[rune]*dfaNode
-	isLeaf   bool
+	children map[rune]*dfaNode // 子节点
+	isLeaf   bool              // 是否为词尾
 }
 
+// DfaModel 是基于 DFA 的敏感词匹配器
 func newDfaNode() *dfaNode {
 	return &dfaNode{
 		children: make(map[rune]*dfaNode),
@@ -22,12 +24,14 @@ func NewDfaModel() *DfaModel {
 	}
 }
 
+// 添加多个词
 func (m *DfaModel) AddWords(words ...string) {
 	for _, word := range words {
 		m.AddWord(word)
 	}
 }
 
+// 添加单个词到 DFA 树中
 func (m *DfaModel) AddWord(word string) {
 	now := m.root
 	runes := []rune(word)
@@ -45,12 +49,14 @@ func (m *DfaModel) AddWord(word string) {
 	now.isLeaf = true
 }
 
+// 删除多个词
 func (m *DfaModel) DelWords(words ...string) {
 	for _, word := range words {
 		m.DelWord(word)
 	}
 }
 
+// 删除单个词（仅支持叶子节点剪枝）
 func (m *DfaModel) DelWord(word string) {
 	var lastLeaf *dfaNode
 	var lastLeafNextRune rune
@@ -72,6 +78,7 @@ func (m *DfaModel) DelWord(word string) {
 	delete(lastLeaf.children, lastLeafNextRune)
 }
 
+// 监听新增和删除通道
 func (m *DfaModel) Listen(addChan, delChan <-chan string) {
 	go func() {
 		for word := range addChan {
@@ -86,6 +93,7 @@ func (m *DfaModel) Listen(addChan, delChan <-chan string) {
 	}()
 }
 
+// 查找文本中所有敏感词
 func (m *DfaModel) FindAll(text string) []string {
 	var matches []string // stores words that match in dict
 	var found bool       // if current rune in node's map
@@ -133,6 +141,7 @@ func (m *DfaModel) FindAll(text string) []string {
 	return res
 }
 
+// 查找所有敏感词及其出现次数
 func (m *DfaModel) FindAllCount(text string) map[string]int {
 	res := make(map[string]int)
 	var found bool
@@ -170,6 +179,7 @@ func (m *DfaModel) FindAllCount(text string) map[string]int {
 	return res
 }
 
+// 查找一个敏感词（命中第一个即返回）
 func (m *DfaModel) FindOne(text string) string {
 	var found bool
 	var now *dfaNode
@@ -199,10 +209,12 @@ func (m *DfaModel) FindOne(text string) string {
 	return ""
 }
 
+// 判断文本中是否包含敏感词
 func (m *DfaModel) IsSensitive(text string) bool {
 	return m.FindOne(text) != ""
 }
 
+// 将敏感词替换为指定字符（如 *）
 func (m *DfaModel) Replace(text string, repl rune) string {
 	var found bool
 	var now *dfaNode
@@ -234,6 +246,7 @@ func (m *DfaModel) Replace(text string, repl rune) string {
 	return string(runes)
 }
 
+// 将敏感词从文本中完全移除
 func (m *DfaModel) Remove(text string) string {
 	var found bool
 	var now *dfaNode
