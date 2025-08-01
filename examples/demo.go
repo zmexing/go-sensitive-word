@@ -17,6 +17,7 @@ func main() {
 		return
 	}
 
+	// 加载敏感词库
 	err = filter.LoadDictEmbed(
 		sensitive.DictCovid19,
 		sensitive.DictOther,

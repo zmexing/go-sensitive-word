@@ -30,6 +30,7 @@ func main() {
       return
    }
 
+   // 加载敏感词库
    err = filter.LoadDictEmbed(
       sensitive.DictCovid19,
       sensitive.DictOther,
@@ -86,7 +87,6 @@ func main() {
    res6 := filter.Remove(sensitiveText)
    fmt.Printf("res6: %v \n", res6)
 }
-
 
 
 // 输出结果
