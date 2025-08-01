@@ -14,71 +14,103 @@ go get -u github.com/zmexing/go-sensitive-word@latest
 package main
 
 import (
-	sensitive "github.com/zmexing/go-sensitive-word"
-	"fmt"
-	"log"
+   "fmt"
+   sensitive "github.com/zmexing/go-sensitive-word"
+   "log"
 )
 
 func main() {
-	filter,err := sensitive.NewFilter(
-		sensitive.StoreOption{Type: sensitive.StoreMemory},
-		sensitive.FilterOption{Type: sensitive.FilterDfa},
-	)
-	if err != nil {
-		log.Fatalf("敏感词服务启动失败, err:%v", err)
-		return
-	}
+   filter, err := sensitive.NewFilter(
+      sensitive.StoreOption{Type: sensitive.StoreMemory}, // 基于内存
+      sensitive.FilterOption{Type: sensitive.FilterDfa},  // 基于DFA算法
+   )
 
-	// 加载敏感词库
-	err = filter.Store.LoadDictPath("./your_path/dict.txt")
-	if err != nil {
-		log.Fatalf("加载词库发生了错误, err:%v", err)
-		return
-	}
+   if err != nil {
+      log.Fatalf("敏感词服务启动失败, err:%v", err)
+      return
+   }
 
-	// 动态自定义敏感词
-	err = filter.Store.AddWord("测试1", "测试2", "成小王")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+   err = filter.LoadDictEmbed(
+      sensitive.DictCovid19,
+      sensitive.DictOther,
+      sensitive.DictReactionary,
+      sensitive.DictViolence,
+      sensitive.DictPeopleLife,
+      sensitive.DictPornography,
+      sensitive.DictAdditional,
+      sensitive.DictCorruption,
+      sensitive.DictTemporaryTencent,
+   )
+   if err != nil {
+      log.Fatalf("加载词库发生了错误, err:%v", err)
+      return
+   }
 
-	sensitiveText := "成小王微笑着对毒品销售说，我认为sb的人有点意思"
+   // 动态添加自定义敏感词
+   err = filter.Store.AddWord("李世民", "秦始皇")
+   if err != nil {
+      log.Fatalf("添加敏感词发生了错误, err:%v", err)
+      return
+   }
 
-	// 是否有敏感词
-	res1 := filter.IsSensitive(sensitiveText)
-	fmt.Printf("res1: %v \n", res1)
+   // 动态自定义敏感词白名单
+   err = filter.Store.DelWord("武汉海鲜市场", "武汉")
+   if err != nil {
+      log.Fatalf("删除敏感词发生了错误, err:%v", err)
+      return
+   }
 
-	// 找到一个敏感词
-	res2 := filter.FindOne(sensitiveText)
-	fmt.Printf("res2: %v \n", res2)
+   sensitiveText := "李世民和老祖秦始皇的是忘年交，他们两个相约一起去武汉海鲜市场玩耍"
 
-	// 找到所有敏感词
-	res3 := filter.FindAll(sensitiveText)
-	fmt.Printf("res3: %v \n", res3)
+   // 是否有敏感词
+   res1 := filter.IsSensitive(sensitiveText)
+   fmt.Printf("res1: %v \n", res1)
 
-	// 找到所有敏感词及出现次数
-	res4 := filter.FindAllCount(sensitiveText)
-	fmt.Printf("res4: %v \n", res4)
+   // 找到一个敏感词
+   res2 := filter.FindOne(sensitiveText)
+   fmt.Printf("res2: %v \n", res2)
 
-	// 和谐敏感词
-	res5 := filter.Replace(sensitiveText, '*')
-	fmt.Printf("res5: %v \n", res5)
+   // 找到所有敏感词
+   res3 := filter.FindAll(sensitiveText)
+   fmt.Printf("res3: %v \n", res3)
 
-	// 过滤铭感词
-	res6 := filter.Remove(sensitiveText)
-	fmt.Printf("res6: %v \n", res6)
+   // 找到所有敏感词及出现次数
+   res4 := filter.FindAllCount(sensitiveText)
+   fmt.Printf("res4: %v \n", res4)
+
+   // 和谐敏感词
+   res5 := filter.Replace(sensitiveText, '*')
+   fmt.Printf("res5: %v \n", res5)
+
+   // 过滤铭感词
+   res6 := filter.Remove(sensitiveText)
+   fmt.Printf("res6: %v \n", res6)
 }
 
 
+
 // 输出结果
-//res1: true
-//res2: 成小王
-//res3: [成小王 毒品 毒品销售 sb]
-//res4: map[sb:1 成小王:1 毒品:1 毒品销售:1]
-//res5: ***微笑着对****说，我认为sb的人有点意思
-//res6: 微笑着对销售说，我认为的人有点意思 
+// res1: true
+// res2: 李世民
+// res3: [李世民 秦始皇]
+// res4: map[李世民:1 秦始皇:1]
+// res5: ***和老祖***的是忘年交，他们两个相约一起去武汉海鲜市场玩耍
+// res6: 和老祖的是忘年交，他们两个相约一起去武汉海鲜市场玩耍 
 ```
+
+### 支持的功能API
+
+| 方法名              | 说明             |
+| ---------------- | -------------- |
+| `IsSensitive()`  | 判断文本中是否存在敏感词   |
+| `FindOne()`      | 查找文本中的第一个敏感词   |
+| `FindAll()`      | 查找文本中所有敏感词（去重） |
+| `FindAllCount()` | 查找所有敏感词及其出现次数  |
+| `Replace()`      | 替换所有敏感词为指定字符   |
+| `Remove()`       | 从文本中删除所有敏感词    |
+| `AddWord()`      | 动态添加敏感词        |
+| `DelWord()`      | 动态删除敏感词        |
+
 
 ## 更多特性
 
