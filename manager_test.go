@@ -6,7 +6,8 @@ import (
 	"testing"
 )
 
-func TestFilter1(t *testing.T) {
+// 敏感词检测
+func TestFilter(t *testing.T) {
 	filter, err := NewFilter(
 		StoreOption{Type: StoreMemory},
 		FilterOption{Type: FilterDfa},
@@ -17,7 +18,17 @@ func TestFilter1(t *testing.T) {
 	}
 
 	// 加载敏感词库
-	err = filter.Store.LoadDictPath("./text/dict2.txt")
+	err = filter.LoadDictEmbed(
+		DictCovid19,
+		DictOther,
+		DictReactionary,
+		DictViolence,
+		DictPeopleLife,
+		DictPornography,
+		DictAdditional,
+		DictCorruption,
+		DictTemporaryTencent,
+	)
 	if err != nil {
 		log.Fatalf("加载词库发生了错误, err:%v", err)
 		return
@@ -57,44 +68,7 @@ func TestFilter1(t *testing.T) {
 	fmt.Printf("res6: %v \n", res6)
 }
 
-func TestFilter2(t *testing.T) {
-	filter, err := NewFilter(
-		StoreOption{Type: StoreMemory},
-		FilterOption{Type: FilterDfa},
-	)
-
-	if err != nil {
-		log.Fatalf("敏感词服务启动失败, err:%v", err)
-		return
-	}
-
-	//files, err := text.Files()
-	//if err != nil {
-	//	log.Fatalf("获取敏感词库文件发生了错误, err:%v", err)
-	//	return
-	//}
-	//
-	//// 加载敏感词库
-	//err = filter.Store.LoadDictPath(files...)
-	//if err != nil {
-	//	log.Fatalf("加载词库发生了错误, err:%v", err)
-	//	return
-	//}
-
-	// 动态自定义敏感词
-	err = filter.Store.AddWord("测试1", "测试2", "成小王")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	sensitiveText := "成小王微笑着对毒品销售说，我认为台湾国的人有点意思"
-
-	// 是否有敏感词
-	res1 := filter.IsSensitive(sensitiveText)
-	fmt.Printf("res1: %v \n", res1)
-}
-
+// 压力测试
 func BenchmarkIsSensitive(b *testing.B) {
 	filter, err := NewFilter(
 		StoreOption{Type: StoreMemory},
@@ -106,7 +80,18 @@ func BenchmarkIsSensitive(b *testing.B) {
 		return
 	}
 
-	err = filter.Store.LoadDictPath("./text/dict2.txt")
+	// 加载敏感词库
+	err = filter.LoadDictEmbed(
+		DictCovid19,
+		DictOther,
+		DictReactionary,
+		DictViolence,
+		DictPeopleLife,
+		DictPornography,
+		DictAdditional,
+		DictCorruption,
+		DictTemporaryTencent,
+	)
 	if err != nil {
 		log.Fatalf("加载词库发生了错误, err:%v", err)
 		return
@@ -126,6 +111,7 @@ func BenchmarkIsSensitive(b *testing.B) {
 	}
 }
 
+// 压力测试
 func BenchmarkReplace(b *testing.B) {
 	filter, err := NewFilter(
 		StoreOption{Type: StoreMemory},
@@ -137,7 +123,18 @@ func BenchmarkReplace(b *testing.B) {
 		return
 	}
 
-	err = filter.Store.LoadDictPath("./text/dict2.txt")
+	// 加载敏感词库
+	err = filter.LoadDictEmbed(
+		DictCovid19,
+		DictOther,
+		DictReactionary,
+		DictViolence,
+		DictPeopleLife,
+		DictPornography,
+		DictAdditional,
+		DictCorruption,
+		DictTemporaryTencent,
+	)
 	if err != nil {
 		log.Fatalf("加载词库发生了错误, err:%v", err)
 		return
