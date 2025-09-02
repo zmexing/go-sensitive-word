@@ -36,14 +36,26 @@ type FilterOption struct {
 var (
 	//go:embed text/COVID-19词库.txt
 	DictCovid19 string
+	//go:embed text/GFW补充词库.txt
+	DictGFWAdditional string
 	//go:embed text/其他词库.txt
 	DictOther string
 	//go:embed text/反动词库.txt
 	DictReactionary string
+	//go:embed text/广告类型.txt
+	DictAdvertisement string
+	//go:embed text/政治类型.txt
+	DictPolitical string
 	//go:embed text/暴恐词库.txt
 	DictViolence string
 	//go:embed text/民生词库.txt
 	DictPeopleLife string
+	//go:embed text/涉枪涉爆.txt
+	DictGunExplosion string
+	//go:embed text/网易前端过滤敏感词库.txt
+	DictNeteaseFE string
+	//go:embed text/色情类型.txt
+	DictSexual string
 	//go:embed text/色情词库.txt
 	DictPornography string
 	//go:embed text/补充词库.txt
@@ -52,4 +64,6 @@ var (
 	DictCorruption string
 	//go:embed text/零时-Tencent.txt
 	DictTemporaryTencent string
+	//go:embed text/非法网址.txt
+	DictIllegalURL string
 )

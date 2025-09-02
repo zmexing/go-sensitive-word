@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	sensitive "github.com/zmexing/go-sensitive-word"
 	"log"
+
+	sensitive "github.com/zmexing/go-sensitive-word"
 )
 
 func main() {
@@ -20,14 +21,21 @@ func main() {
 	// 加载敏感词库
 	err = filter.LoadDictEmbed(
 		sensitive.DictCovid19,
+		sensitive.DictGFWAdditional,
 		sensitive.DictOther,
 		sensitive.DictReactionary,
+		sensitive.DictAdvertisement,
+		sensitive.DictPolitical,
 		sensitive.DictViolence,
 		sensitive.DictPeopleLife,
+		sensitive.DictGunExplosion,
+		sensitive.DictNeteaseFE,
+		sensitive.DictSexual,
 		sensitive.DictPornography,
 		sensitive.DictAdditional,
 		sensitive.DictCorruption,
 		sensitive.DictTemporaryTencent,
+		sensitive.DictIllegalURL,
 	)
 	if err != nil {
 		log.Fatalf("加载词库发生了错误, err:%v", err)
