@@ -34,8 +34,6 @@
 
 下面的逻辑图演示敏感词库多条字词形成的 DFA 节点树思维图。
 
-![](assets/dfa-mingan.png)
-
 ```mermaid
 graph TD
     台 --> XXX
