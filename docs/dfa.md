@@ -28,7 +28,8 @@ type DfaModel struct {
 - **children map[rune]*dfaNode**：以字符为边，存储当前节点的所有子节点。
 - **isLeaf bool**：标记从 root 到当前节点的路径是否构成一个完整敏感词。
 - **root**：空前缀状态，所有匹配从这里开始。
-- ⚠️ 注意：相同字符在不同父路径下会对应不同 dfaNode 实例（路径唯一决定节点），不会全局复用。
+
+⚠️ 注意：相同字符在不同父路径下会对应不同 dfaNode 实例（路径唯一决定节点），不会全局复用。
 
 ## 构建过程（AddWord / AddWords）
 - **初始化**：创建根节点 `root`（非叶子）。
