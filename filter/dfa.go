@@ -75,7 +75,18 @@ func (m *DfaModel) DelWord(word string) {
 		}
 	}
 
-	delete(lastLeaf.children, lastLeafNextRune)
+	// 确保找到的词确实是叶子节点
+	if !now.isLeaf {
+		return
+	}
+
+	if lastLeaf != nil {
+		// 没有其他分支，删除从 lastLeaf 到目标节点的路径
+		delete(lastLeaf.children, lastLeafNextRune)
+	} else {
+		// 有其他分支，只取消叶子标记
+		now.isLeaf = false
+	}
 }
 
 // 监听新增和删除通道
