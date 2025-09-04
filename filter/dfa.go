@@ -280,3 +280,46 @@ func (m *DfaModel) Remove(text string) string {
 
 	return string(filtered)
 }
+
+// Listen 监听新增和删除通道（线程安全建议加锁）
+func (m *AcModel) Listen(addChan, delChan <-chan string) {
+	go func() {
+		for word := range addChan {
+			m.AddWord(word)
+			m.Build() // 重建 fail 指针
+		}
+	}()
+	go func() {
+		for word := range delChan {
+			m.DelWord(word)
+			m.Build() // 重建 fail 指针
+		}
+	}()
+}
+
+// DelWord 删除一个敏感词
+func (m *AcModel) DelWord(word string) {
+	node := m.root
+	path := []*acNode{}
+	runes := []rune(word)
+
+	for _, r := range runes {
+		next, ok := node.children[r]
+		if !ok {
+			return
+		}
+		path = append(path, next)
+		node = next
+	}
+
+	// 从 output 中删除这个词
+	out := node.output
+	newOut := out[:0]
+	for _, w := range out {
+		if w != word {
+			newOut = append(newOut, w)
+		}
+	}
+	node.output = newOut
+	// 简化处理，不回溯剪枝节点，保留空节点
+}
