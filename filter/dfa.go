@@ -33,6 +33,10 @@ func (m *DfaModel) AddWords(words ...string) {
 
 // 添加单个词到 DFA 树中
 func (m *DfaModel) AddWord(word string) {
+	if word == "" {
+		return
+	}
+
 	now := m.root
 	runes := []rune(word)
 
@@ -58,6 +62,10 @@ func (m *DfaModel) DelWords(words ...string) {
 
 // 删除单个词（仅支持叶子节点剪枝）
 func (m *DfaModel) DelWord(word string) {
+	if word == "" {
+		return
+	}
+
 	var lastLeaf *dfaNode
 	var lastLeafNextRune rune
 	now := m.root
