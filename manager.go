@@ -2,6 +2,7 @@ package go_sensitive_word
 
 import (
 	"errors"
+
 	"github.com/zmexing/go-sensitive-word/filter"
 	"github.com/zmexing/go-sensitive-word/store"
 )
@@ -9,7 +10,7 @@ import (
 // Manager 是敏感词过滤系统的核心结构，整合了词库存储和过滤算法
 type Manager struct {
 	store.Store   //  // 词库存储接口（支持内存、本地文件、远程等）
-	filter.Filter // // 敏感词匹配算法接口（如 DFA）
+	filter.Filter // // 敏感词匹配算法接口（如 DFA、Aho-Corasick）
 }
 
 // NewFilter 初始化过滤器和词库存储
@@ -31,6 +32,10 @@ func NewFilter(storeOption StoreOption, filterOption FilterOption) (*Manager, er
 		// 启动监听协程，实时接收新增/删除词的通知
 		go dfaModel.Listen(filterStore.GetAddChan(), filterStore.GetDelChan())
 		myFilter = dfaModel
+	case FilterAc: // 使用 AC 自动机算法
+		acModel := filter.NewAcModel()
+		go acModel.Listen(filterStore.GetAddChan(), filterStore.GetDelChan())
+		myFilter = acModel
 	default:
 		return nil, errors.New("invalid filter type")
 	}

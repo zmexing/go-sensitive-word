@@ -12,6 +12,7 @@ const (
 // 当前仅支持 DFA 算法（FilterDfa），后续可支持 Trie、AC自动机、正则等。
 const (
 	FilterDfa = iota // DFA 敏感词过滤算法（默认）
+	FilterAc
 )
 
 // StoreOption 定义了词库存储的配置选项

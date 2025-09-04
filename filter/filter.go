@@ -19,3 +19,4 @@ type (
 
 // 接口实现验证
 var _ Filter = (*DfaModel)(nil)
+var _ Filter = (*AcModel)(nil)
