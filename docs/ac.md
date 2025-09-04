@@ -120,70 +120,6 @@ graph TD
 - AC 树会在构建 fail 指针时，把相同后缀的节点链接到公共路径，支持同时匹配多个词。
 - 每个叶子节点 output 列表中存储匹配的敏感词。
 
-## DFA 与 AC 树对比图
-```mermaid
-%% DFA 与 AC 树对比
-%% 左边 DFA，右边 AC
-graph TD
-    subgraph DFA
-        DRoot((root))
-        DRoot --> D台["台"]
-        D台 --> D海["海"]
-        D海 --> D国["国"]
-        D国 --> D国Leaf(("叶子: 台海国"))
-        D海 --> D独["独"]
-        D独 --> D立["立"]
-        D立 --> D独立Leaf(("叶子: 台海独立"))
-        D海 --> D总["总"]
-        D总 --> D统["统"]
-        D统 --> D总统Leaf(("叶子: 台海总统"))
-        D海 --> D帝["帝"]
-        D帝 --> D国2["国"]
-        D国2 --> D帝国Leaf1(("叶子: 台海帝国"))
-        D台 --> D界["界"]
-        D界 --> D帝2["帝"]
-        D帝2 --> D国3["国"]
-        D国3 --> D帝国Leaf2(("叶子: 台界帝国"))
-    end
-
-    subgraph AC
-        ARoot((root))
-        ARoot --> A台["台\noutput:[]\nfail:root"]
-        ARoot --> A界["界\noutput:[]\nfail:root"]
-
-        A台 --> A海["海\noutput:[]\nfail:root"]
-        A海 --> A国["国\noutput:['台海国']\nfail:root"]
-        A海 --> A独["独\noutput:[]\nfail:root"]
-        A独 --> A立["立\noutput:['台海独立']\nfail:root"]
-        A海 --> A总["总\noutput:[]\nfail:root"]
-        A总 --> A统["统\noutput:['台海总统']\nfail:root"]
-        A海 --> A帝["帝\noutput:[]\nfail:root"]
-        A帝 --> A国2["国\noutput:['台海帝国']\nfail:root"]
-
-        A界 --> A帝2["帝\noutput:[]\nfail:A帝"]
-        A帝2 --> A国3["国\noutput:['台界帝国']\nfail:A国2"]
-
-        %% fail 指针虚线
-        A国 -.-> ARoot
-        A独 -.-> ARoot
-        A立 -.-> ARoot
-        A总 -.-> ARoot
-        A统 -.-> ARoot
-        A帝 -.-> ARoot
-        A国2 -.-> ARoot
-        A界 -.-> ARoot
-        A帝2 -.-> A帝
-        A国3 -.-> A国2
-    end
-```
-
-### 例图说明：
-1. 每个节点标注：
-    - `output`：该节点匹配到的敏感词列表
-    - `fail`：fail 指针回溯目标
-2. 虚线箭头表示 fail 指针，用于多词匹配的回溯。
-3. 节点之间路径按字符顺序构建，叶子节点存储完整敏感词。
-
 ### AC（Aho-Corasick）算法的敏感词匹配流程
 #### AC 树构建回顾
 AC 树由以下部分组成：
@@ -260,7 +196,72 @@ Fail 指针示意：
     2. 可以在单次扫描中匹配多个敏感词。
     3. 输出列表允许同时匹配重叠敏感词（例如 `"台海帝国"` 和 `"帝国"`）。
 
-    
+
+
+
+## DFA 与 AC 树对比图
+```mermaid
+%% DFA 与 AC 树对比
+%% 左边 DFA，右边 AC
+graph TD
+    subgraph DFA
+        DRoot((root))
+        DRoot --> D台["台"]
+        D台 --> D海["海"]
+        D海 --> D国["国"]
+        D国 --> D国Leaf(("叶子: 台海国"))
+        D海 --> D独["独"]
+        D独 --> D立["立"]
+        D立 --> D独立Leaf(("叶子: 台海独立"))
+        D海 --> D总["总"]
+        D总 --> D统["统"]
+        D统 --> D总统Leaf(("叶子: 台海总统"))
+        D海 --> D帝["帝"]
+        D帝 --> D国2["国"]
+        D国2 --> D帝国Leaf1(("叶子: 台海帝国"))
+        D台 --> D界["界"]
+        D界 --> D帝2["帝"]
+        D帝2 --> D国3["国"]
+        D国3 --> D帝国Leaf2(("叶子: 台界帝国"))
+    end
+
+    subgraph AC
+        ARoot((root))
+        ARoot --> A台["台\noutput:[]\nfail:root"]
+        ARoot --> A界["界\noutput:[]\nfail:root"]
+
+        A台 --> A海["海\noutput:[]\nfail:root"]
+        A海 --> A国["国\noutput:['台海国']\nfail:root"]
+        A海 --> A独["独\noutput:[]\nfail:root"]
+        A独 --> A立["立\noutput:['台海独立']\nfail:root"]
+        A海 --> A总["总\noutput:[]\nfail:root"]
+        A总 --> A统["统\noutput:['台海总统']\nfail:root"]
+        A海 --> A帝["帝\noutput:[]\nfail:root"]
+        A帝 --> A国2["国\noutput:['台海帝国']\nfail:root"]
+
+        A界 --> A帝2["帝\noutput:[]\nfail:A帝"]
+        A帝2 --> A国3["国\noutput:['台界帝国']\nfail:A国2"]
+
+        %% fail 指针虚线
+        A国 -.-> ARoot
+        A独 -.-> ARoot
+        A立 -.-> ARoot
+        A总 -.-> ARoot
+        A统 -.-> ARoot
+        A帝 -.-> ARoot
+        A国2 -.-> ARoot
+        A界 -.-> ARoot
+        A帝2 -.-> A帝
+        A国3 -.-> A国2
+    end
+```
+
+### 例图说明：
+1. 每个节点标注：
+    - `output`：该节点匹配到的敏感词列表
+    - `fail`：fail 指针回溯目标
+2. 虚线箭头表示 fail 指针，用于多词匹配的回溯。
+3. 节点之间路径按字符顺序构建，叶子节点存储完整敏感词。
 
 ## DFA 与 AC 树对比图
 ```mermaid
