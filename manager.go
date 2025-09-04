@@ -32,9 +32,8 @@ func NewFilter(storeOption StoreOption, filterOption FilterOption) (*Manager, er
 		// 启动监听协程，实时接收新增/删除词的通知
 		go dfaModel.Listen(filterStore.GetAddChan(), filterStore.GetDelChan())
 		myFilter = dfaModel
-	case FilterAc: // 使用 Aho-Corasick 算法
+	case FilterAc: // 使用 AC 自动机算法
 		acModel := filter.NewAcModel()
-		// 启动监听协程，实时接收新增/删除词的通知
 		go acModel.Listen(filterStore.GetAddChan(), filterStore.GetDelChan())
 		myFilter = acModel
 	default:
