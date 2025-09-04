@@ -62,6 +62,10 @@ func (m *AcModel) AddWords(output ...string) {
 
 // DelWord 删除单个词
 func (m *AcModel) DelWord(word string) {
+	if word == "" {
+		return
+	}
+
 	m.built = false // 重置构建状态
 	now := m.root
 	for _, r := range []rune(word) {
