@@ -1,166 +1,245 @@
 package filter
 
-import "container/list"
+import "strings"
 
-// acNode 是 Aho-Corasick 的节点
+// AC 自动机节点结构
 type acNode struct {
-	children map[rune]*acNode
-	fail     *acNode
-	output   []string
+	children map[rune]*acNode // 子节点
+	fail     *acNode          // 失败指针
+	output   []string         // 该节点对应的完整单词列表
+}
+
+// 创建新的 AC 节点
+func newAcNode() *acNode {
+	return &acNode{
+		children: make(map[rune]*acNode),
+		fail:     nil,
+		output:   make([]string, 0),
+	}
 }
 
 // AcModel 是基于 Aho-Corasick 的敏感词匹配器
 type AcModel struct {
-	root *acNode
+	root  *acNode
+	built bool // 标记是否已构建失败指针
 }
 
-// NewAcModel 创建 Aho-Corasick 模型
+// NewAcModel 创建新的 AC 自动机
 func NewAcModel() *AcModel {
 	return &AcModel{
-		root: &acNode{
-			children: make(map[rune]*acNode),
-			fail:     nil,
-			output:   nil,
-		},
+		root:  newAcNode(),
+		built: false,
 	}
 }
 
-// AddWords 批量添加敏感词
-func (m *AcModel) AddWords(words ...string) {
-	for _, word := range words {
+// AddWord 添加单个词到 AC 自动机中
+func (m *AcModel) AddWord(word string) {
+	if word == "" {
+		return
+	}
+
+	m.built = false // 重置构建状态
+	now := m.root
+	for _, r := range []rune(word) {
+		if next, ok := now.children[r]; ok {
+			now = next
+		} else {
+			next = newAcNode()
+			now.children[r] = next
+			now = next
+		}
+	}
+	// 直接追加到 output，表示此节点有对应敏感词
+	now.output = append(now.output, word)
+}
+
+// AddWords 添加多个词
+func (m *AcModel) AddWords(output ...string) {
+	for _, word := range output {
 		m.AddWord(word)
 	}
 }
 
-// AddWord 添加一个敏感词
-func (m *AcModel) AddWord(word string) {
-	node := m.root
+// DelWord 删除单个词
+func (m *AcModel) DelWord(word string) {
+	m.built = false // 重置构建状态
+	now := m.root
 	for _, r := range []rune(word) {
-		if next, ok := node.children[r]; ok {
-			node = next
-		} else {
-			newNode := &acNode{
-				children: make(map[rune]*acNode),
-			}
-			node.children[r] = newNode
-			node = newNode
+		next, ok := now.children[r]
+		if !ok {
+			return // 词不存在
+		}
+		now = next
+	}
+	// 从 output 列表中移除
+	for i, w := range now.output {
+		if w == word {
+			now.output = append(now.output[:i], now.output[i+1:]...)
+			break
 		}
 	}
-	node.output = append(node.output, word)
 }
 
-// Build 构建 fail 指针
-func (m *AcModel) Build() {
-	queue := list.New()
-	// 初始化第一层
+// Deloutput 删除多个词
+func (m *AcModel) Deloutput(output ...string) {
+	for _, word := range output {
+		m.DelWord(word)
+	}
+}
+
+// buildFailurePointer 构建失败指针
+func (m *AcModel) buildFailurePointer() {
+	if m.built {
+		return
+	}
+
+	queue := make([]*acNode, 0)
+	// 第一层节点的失败指针指向根节点
 	for _, child := range m.root.children {
 		child.fail = m.root
-		queue.PushBack(child)
+		queue = append(queue, child)
 	}
 
-	for queue.Len() > 0 {
-		front := queue.Remove(queue.Front()).(*acNode)
-		for r, next := range front.children {
-			queue.PushBack(next)
+	// BFS 构建失败指针
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
 
-			// 回溯 fail 指针
-			failNode := front.fail
-			for failNode != nil {
-				if child, ok := failNode.children[r]; ok {
-					next.fail = child
-					next.output = append(next.output, child.output...)
-					break
-				}
-				failNode = failNode.fail
+		for char, child := range current.children {
+			queue = append(queue, child)
+
+			temp := current.fail
+			for temp != nil && temp.children[char] == nil {
+				temp = temp.fail
 			}
-			if failNode == nil {
-				next.fail = m.root
+
+			if temp == nil {
+				child.fail = m.root
+			} else {
+				child.fail = temp.children[char]
+				// 继承 fail 节点的输出
+				child.output = append(child.output, child.fail.output...)
 			}
 		}
 	}
+
+	m.built = true
 }
 
-// FindAll 查找所有敏感词
+// Listen 监听新增和删除通道
+func (m *AcModel) Listen(addChan, delChan <-chan string) {
+	go func() {
+		for word := range addChan {
+			m.AddWord(word)
+		}
+	}()
+	go func() {
+		for word := range delChan {
+			m.DelWord(word)
+		}
+	}()
+}
+
+// FindAll 查找文本中所有敏感词
 func (m *AcModel) FindAll(text string) []string {
-	node := m.root
-	var result []string
+	m.buildFailurePointer()
+
+	var matches []string
+	seen := make(map[string]struct{})
+	now := m.root
 	for _, r := range []rune(text) {
-		for node != m.root && node.children[r] == nil {
-			node = node.fail
+		for now != m.root && now.children[r] == nil {
+			now = now.fail
 		}
-		if next, ok := node.children[r]; ok {
-			node = next
+		if next, ok := now.children[r]; ok {
+			now = next
+		} else {
+			now = m.root
 		}
-		if len(node.output) > 0 {
-			result = append(result, node.output...)
-		}
-	}
-	// 去重
-	uniq := make(map[string]struct{})
-	var res []string
-	for _, w := range result {
-		if _, ok := uniq[w]; !ok {
-			uniq[w] = struct{}{}
-			res = append(res, w)
+		for _, w := range now.output {
+			if _, ok := seen[w]; !ok {
+				seen[w] = struct{}{}
+				matches = append(matches, w)
+			}
 		}
 	}
-	return res
+	return matches
 }
 
-// FindAllCount 查找所有敏感词及次数
+// FindAllCount 查找所有敏感词及其出现次数
 func (m *AcModel) FindAllCount(text string) map[string]int {
-	node := m.root
-	res := make(map[string]int)
+	m.buildFailurePointer()
+
+	counts := make(map[string]int)
+	now := m.root
 	for _, r := range []rune(text) {
-		for node != m.root && node.children[r] == nil {
-			node = node.fail
+		for now != m.root && now.children[r] == nil {
+			now = now.fail
 		}
-		if next, ok := node.children[r]; ok {
-			node = next
+		if next, ok := now.children[r]; ok {
+			now = next
+		} else {
+			now = m.root
 		}
-		for _, out := range node.output {
-			res[out]++
+		for _, w := range now.output {
+			counts[w]++
 		}
 	}
-	return res
+	return counts
 }
 
-// FindOne 找到第一个敏感词
+// FindOne 查找一个敏感词（优先返回最长匹配）
 func (m *AcModel) FindOne(text string) string {
-	node := m.root
+	m.buildFailurePointer()
+
+	now := m.root
 	for _, r := range []rune(text) {
-		for node != m.root && node.children[r] == nil {
-			node = node.fail
+		for now != m.root && now.children[r] == nil {
+			now = now.fail
 		}
-		if next, ok := node.children[r]; ok {
-			node = next
+		if next, ok := now.children[r]; ok {
+			now = next
+		} else {
+			now = m.root
 		}
-		if len(node.output) > 0 {
-			return node.output[0]
+		if len(now.output) > 0 {
+			// 返回当前节点的最长匹配
+			longest := now.output[0]
+			for i := 1; i < len(now.output); i++ {
+				if len([]rune(now.output[i])) > len([]rune(longest)) {
+					longest = now.output[i]
+				}
+			}
+			return longest
 		}
 	}
 	return ""
 }
 
-// IsSensitive 是否包含敏感词
+// IsSensitive 判断文本中是否包含敏感词
 func (m *AcModel) IsSensitive(text string) bool {
 	return m.FindOne(text) != ""
 }
 
-// Replace 替换敏感词
+// Replace 将敏感词替换为指定字符
 func (m *AcModel) Replace(text string, repl rune) string {
+	m.buildFailurePointer()
+
 	runes := []rune(text)
-	node := m.root
+	now := m.root
 	for i, r := range runes {
-		for node != m.root && node.children[r] == nil {
-			node = node.fail
+		for now != m.root && now.children[r] == nil {
+			now = now.fail
 		}
-		if next, ok := node.children[r]; ok {
-			node = next
+		if next, ok := now.children[r]; ok {
+			now = next
+		} else {
+			now = m.root
 		}
-		if len(node.output) > 0 {
-			for _, w := range node.output {
-				start := i - len([]rune(w)) + 1
+		for _, w := range now.output {
+			wordLen := len([]rune(w))
+			start := i - wordLen + 1
+			if start >= 0 {
 				for j := start; j <= i; j++ {
 					runes[j] = repl
 				}
@@ -170,32 +249,20 @@ func (m *AcModel) Replace(text string, repl rune) string {
 	return string(runes)
 }
 
-// Remove 移除敏感词
+// Remove 将敏感词从文本中完全移除
 func (m *AcModel) Remove(text string) string {
-	runes := []rune(text)
-	node := m.root
-	mask := make([]bool, len(runes))
-	for i, r := range runes {
-		for node != m.root && node.children[r] == nil {
-			node = node.fail
-		}
-		if next, ok := node.children[r]; ok {
-			node = next
-		}
-		if len(node.output) > 0 {
-			for _, w := range node.output {
-				start := i - len([]rune(w)) + 1
-				for j := start; j <= i; j++ {
-					mask[j] = true
-				}
+	matches := m.FindAll(text)
+	// 按长度降序，先移除长词避免冲突
+	for i := 0; i < len(matches); i++ {
+		for j := i + 1; j < len(matches); j++ {
+			if len([]rune(matches[i])) < len([]rune(matches[j])) {
+				matches[i], matches[j] = matches[j], matches[i]
 			}
 		}
 	}
-	var filtered []rune
-	for i, r := range runes {
-		if !mask[i] {
-			filtered = append(filtered, r)
-		}
+	result := text
+	for _, w := range matches {
+		result = strings.ReplaceAll(result, w, "")
 	}
-	return string(filtered)
+	return result
 }
