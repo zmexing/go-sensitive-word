@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/imroc/req/v3"
 	cmap "github.com/orcaman/concurrent-map/v2"
+	"github.com/zmexing/go-sensitive-word/fetch"
 )
 
 // MemoryModel 使用并发 map 实现的内存词库
@@ -66,7 +66,7 @@ func (m *MemoryModel) LoadDictEmbed(contents ...string) error {
 func (m *MemoryModel) LoadDictHttp(urls ...string) error {
 	for _, url := range urls {
 		err := func(url string) error {
-			httpRes, err := req.Get(url)
+			httpRes, err := fetch.FetchUrlSimple(url)
 			if err != nil {
 				return err
 			}
@@ -74,7 +74,7 @@ func (m *MemoryModel) LoadDictHttp(urls ...string) error {
 				return errors.New("nil http response")
 			}
 			if httpRes.StatusCode != http.StatusOK {
-				return errors.New(httpRes.GetStatus())
+				return errors.New(httpRes.Status)
 			}
 
 			defer func(Body io.ReadCloser) {
