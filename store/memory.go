@@ -3,12 +3,13 @@ package store
 import (
 	"bufio"
 	"errors"
-	"github.com/imroc/req/v3"
-	cmap "github.com/orcaman/concurrent-map/v2"
 	"io"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/imroc/req/v3"
+	cmap "github.com/orcaman/concurrent-map/v2"
 )
 
 // MemoryModel 使用并发 map 实现的内存词库
@@ -102,8 +103,16 @@ func (m *MemoryModel) LoadDict(reader io.Reader) error {
 			break
 		}
 
-		m.store.Set(string(line), struct{}{})
-		m.addChan <- string(line)
+		// 规范化（去除空格、转小写）
+		word := strings.TrimSpace(string(line))
+		if word == "" {
+			continue
+		}
+		word = strings.ToLower(word)
+
+		// 添加到内存
+		m.store.Set(word, struct{}{})
+		m.addChan <- word
 	}
 
 	return nil
@@ -147,6 +156,10 @@ func (m *MemoryModel) GetDelChan() <-chan string {
 // 添加自定义敏感词
 func (m *MemoryModel) AddWord(words ...string) error {
 	for _, word := range words {
+		// 规范化（去除空格、转小写）
+		word = strings.ToLower(strings.TrimSpace(word))
+
+		// 添加到内存
 		m.store.Set(word, struct{}{})
 		m.addChan <- word
 	}

@@ -146,6 +146,8 @@ func (m *AcModel) Listen(addChan, delChan <-chan string) {
 
 // FindAll 查找文本中所有敏感词
 func (m *AcModel) FindAll(text string) []string {
+	text = strings.ToLower(text)
+
 	m.buildFailurePointer()
 
 	var matches []string
@@ -172,6 +174,8 @@ func (m *AcModel) FindAll(text string) []string {
 
 // FindAllCount 查找所有敏感词及其出现次数
 func (m *AcModel) FindAllCount(text string) map[string]int {
+	text = strings.ToLower(text)
+
 	m.buildFailurePointer()
 
 	counts := make(map[string]int)
@@ -194,6 +198,8 @@ func (m *AcModel) FindAllCount(text string) map[string]int {
 
 // FindOne 查找一个敏感词（优先返回最长匹配）
 func (m *AcModel) FindOne(text string) string {
+	text = strings.ToLower(text)
+
 	m.buildFailurePointer()
 
 	now := m.root
@@ -227,6 +233,8 @@ func (m *AcModel) IsSensitive(text string) bool {
 
 // Replace 将敏感词替换为指定字符
 func (m *AcModel) Replace(text string, repl rune) string {
+	text = strings.ToLower(text)
+
 	m.buildFailurePointer()
 
 	runes := []rune(text)
@@ -255,6 +263,8 @@ func (m *AcModel) Replace(text string, repl rune) string {
 
 // Remove 将敏感词从文本中完全移除
 func (m *AcModel) Remove(text string) string {
+	text = strings.ToLower(text)
+
 	matches := m.FindAll(text)
 	// 按长度降序，先移除长词避免冲突
 	for i := 0; i < len(matches); i++ {
