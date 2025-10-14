@@ -7,6 +7,9 @@ import (
 	sensitive "github.com/zmexing/go-sensitive-word"
 )
 
+// 示例：使用 go-sensitive-word 进行敏感词检测与处理
+// 本示例演示了如何创建过滤器、加载词库、动态添加与删除敏感词，
+// 并对输入文本执行检测、提取、替换、移除等操作。
 func main() {
 	filter, err := sensitive.NewFilter(
 		sensitive.StoreOption{Type: sensitive.StoreMemory}, // 基于内存
@@ -42,12 +45,6 @@ func main() {
 		return
 	}
 
-	err = filter.LoadDictHttp("https://res.yongwang.lu/github/go-sensitive-word/demo.txt")
-	if err != nil {
-		log.Fatalf("加载HTTP词库错误, err:%v", err)
-		return
-	}
-
 	// 动态添加自定义敏感词
 	err = filter.Store.AddWord("李世民", "秦始皇")
 	if err != nil {
@@ -62,7 +59,7 @@ func main() {
 		return
 	}
 
-	sensitiveText := "李世民和老祖秦始皇的是忘年交，他们两个相约一起去武汉海鲜市场玩耍. 并且晚点要一起做Http测试"
+	sensitiveText := "李世民和老祖秦始皇的是忘年交，他们两个相约一起去武汉海鲜市场玩耍"
 
 	// 是否有敏感词
 	res1 := filter.IsSensitive(sensitiveText)
