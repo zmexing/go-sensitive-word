@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -78,6 +79,9 @@ func TestDFA(t *testing.T) {
 	err = filter.Store.AddWord("测试1", "测试2", "成小王")
 	assert.NoError(t, err, "添加自定义敏感词失败")
 
+	// 等待协程处理添加的敏感词
+	time.Sleep(50 * time.Millisecond)
+
 	sensitiveText := "成小王微笑着对毒品销售说，我认为台湾国的人有点意思"
 
 	// 是否有敏感词
@@ -141,6 +145,9 @@ func TestAC(t *testing.T) {
 	err = filter.Store.AddWord("测试1", "测试2", "成小王")
 	assert.NoError(t, err, "添加自定义敏感词失败")
 
+	// 等待协程处理添加的敏感词
+	time.Sleep(50 * time.Millisecond)
+
 	sensitiveText := "成小王微笑着对毒品销售说，我认为台湾国的人有点意思"
 
 	// 是否有敏感词
@@ -195,6 +202,9 @@ func TestLoadDictHttp(t *testing.T) {
 		log.Fatalf("加载HTTP词库错误, err:%v", err)
 		return
 	}
+
+	// 等待协程处理添加的敏感词
+	time.Sleep(50 * time.Millisecond)
 
 	sensitiveText := "我们晚点要一起做Http测试"
 
