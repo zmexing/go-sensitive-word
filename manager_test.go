@@ -82,41 +82,39 @@ func TestDFA(t *testing.T) {
 
 	// 是否有敏感词
 	res1 := filter.IsSensitive(sensitiveText)
+	fmt.Printf("res1: %v \n", res1)
 	assert.True(t, res1, "应检测到敏感词")
 
 	// 找到一个敏感词
 	res2 := filter.FindOne(sensitiveText)
+	fmt.Printf("res2: %v \n", res2)
 	assert.NotEmpty(t, res2, "应至少检测出一个敏感词")
 
 	// 找到所有敏感词
 	res3 := filter.FindAll(sensitiveText)
+	fmt.Printf("res3: %v \n", res3)
 	assert.NotEmpty(t, res3, "FindAll 应返回敏感词列表")
 	assert.Contains(t, res3, "成小王", "应检测到 成小王")
 	assert.Contains(t, res3, "毒品", "应检测到 毒品")
 
 	// 找到所有敏感词及出现次数
 	res4 := filter.FindAllCount(sensitiveText)
+	fmt.Printf("res4: %v \n", res4)
 	assert.GreaterOrEqual(t, res4["毒品"], 1, "毒品 应出现至少一次")
 
 	// 和谐敏感词
 	res5 := filter.Replace(sensitiveText, '*')
+	fmt.Printf("res5: %v \n", res5)
 	for _, w := range res3 {
 		assert.NotContains(t, res5, w, fmt.Sprintf("Replace 后不应包含 %s", w))
 	}
 
 	// 过滤敏感词
 	res6 := filter.Remove(sensitiveText)
+	fmt.Printf("res6: %v \n", res6)
 	for _, w := range res3 {
 		assert.NotContains(t, res6, w, fmt.Sprintf("Remove 后不应包含 %s", w))
 	}
-
-	// 输出内容
-	fmt.Printf("res1: %v \n", res1)
-	fmt.Printf("res2: %v \n", res2)
-	fmt.Printf("res3: %v \n", res3)
-	fmt.Printf("res4: %v \n", res4)
-	fmt.Printf("res5: %v \n", res5)
-	fmt.Printf("res6: %v \n", res6)
 }
 
 // AC自动机算法敏感词检测
